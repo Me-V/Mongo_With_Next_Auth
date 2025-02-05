@@ -1,12 +1,34 @@
 import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
-export default withAuth({
-  pages: {
-    signIn: "/login", // Redirect to login page if not authenticated
+export default withAuth(
+  // `withAuth` augments your `Request` with the user's token.
+  function middleware(req) {
+    return NextResponse.next();
   },
-});
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl;
 
-// Apply to specific routes
+        if (
+          pathname.startsWith("api/auth") ||
+          pathname === "/login" ||
+          pathname === "/register"
+        ) {
+          return true;
+        }
+
+        if (pathname === "/" || pathname.startsWith("api/videos")) {
+          return true;
+        }
+
+        return !!token;
+      },
+    },
+  }
+);
+
 export const config = {
-  matcher: ['/'], // Protect these routes
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)  "],
 };
