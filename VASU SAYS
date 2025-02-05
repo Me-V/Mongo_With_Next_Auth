@@ -1,0 +1,5 @@
+define db.ts (requires the MONGODB_URL of the .env)
+
+define types.d.ts (global types)
+
+define the basic user schema in the models folder to store the user 
